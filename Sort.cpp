@@ -1,4 +1,5 @@
 #include <iostream>
+#include <stack>
 using namespace std;
 
 int temp[100];
@@ -11,7 +12,7 @@ void swap(int &a, int &b)
 }
 
 // n^2 정렬 알고리즘
-// 버블 정렬 : 인접한 두 원소를 비교하여 정렬. 비교 횟수가 많다. 
+// 버블 정렬 : 인접한 두 원소를 비교하여 정렬. 비교 횟수가 많다. 이미 정렬된 배열은 N의 시간복잡도를 가진다. 
 void bubbleSort(int arr[], int size)
 {
 	for(int i=0; i<size; i++)
@@ -41,7 +42,7 @@ void selectionSort(int arr[], int size)
 	}
 }
 /*
-	삽입 정렬 : Key를 왼쪽 부분은 정렬이 된 것이다. 이 부분에서 Key를 적절한 인덱스에 끼워 넣어 정렬 상태를 유지
+	삽입 정렬 : Key의 왼쪽 부분은 정렬이 된 것이다. 이 부분에서 Key를 적절한 인덱스에 끼워 넣어 정렬 상태를 유지
 	쉘정렬은 삽입 정렬의 변형 알고리즘인데, 특정 Gap 차이가 나는 원소끼리만 삽입 정렬을 한다.
 	멀리 있는 원소끼리 교환을 하기 때문에 교환한 원소가 적절한 자리가 맞을 확률이 높다. 
 */
@@ -89,6 +90,43 @@ void quickSort(int arr[], int left, int right)
 		quickSort(arr,pivot+1,right);		
 	}
 }
+// 퀵소트의 비재귀 알고리즘
+void quickSort2(int arr[], int size)
+{
+	stack<int> s;
+	int Left = 0;
+	int Rightt = size-1;
+	int pivot,i,j;
+	s.push(Rightt);
+	s.push(Left);
+	
+	while(!s.empty())
+	{
+		Left = s.top(); s.pop();
+		Rightt = s.top(); s.pop();
+		if(Left < Rightt)
+		{
+			pivot = Left;
+			j = pivot;
+			i = Left+1;
+			for(; i<=Rightt; i++)
+			{
+				if(arr[pivot] >= arr[i])
+				{
+					j++;
+					swap(arr[i],arr[j]);					
+				}
+			}
+			swap(arr[pivot],arr[j]);
+			pivot = j;
+			
+			s.push(Rightt);
+			s.push(pivot+1);
+			s.push(pivot-1);
+			s.push(Left);
+		}
+	}
+} 
 
 // 병합 정렬 : 분할 후 정렬. Stable-Sort이다. N만큼의 메모리가 추가적으로 필요 
 void mergeSort(int arr[], int left, int right)
@@ -170,8 +208,8 @@ void radixSort(int arr[], int size, int base)
 
 int main()
 {
-	int arr[] = {3,1,6,2,7,1};
-	radixSort(arr,6,10);
+	int arr[] = {3,1,6,2,7,9};
+	quickSort2(arr,6);
 	for(int i=0; i<6; i++)
 		cout << arr[i] << ' ';
 	return 0;
